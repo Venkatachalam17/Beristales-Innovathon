@@ -1,0 +1,30 @@
+# tutor_words.py
+
+letter_words = {
+    "a": ["apple", "apricot", "banana", "grape"],
+    "b": ["banana", "blueberry", "blackberry", "box"],
+    "c": ["cherry", "cloud", "car", "cat"],
+    "d": ["dog", "dragon", "daft", "desk"],
+    "e": ["elephant", "lemon", "tree", "peach"],
+    "f": ["fox", "forest", "fence", "fish"],
+    "g": ["grape", "garden", "grizzly", "golf"],
+    "h": ["house", "hill", "how", "hat"],
+    "i": ["igloo", "ice", "ink", "island"],
+    "j": ["judge", "jumps", "jam", "jelly"],
+    "k": ["kite", "king", "keyboard", "kitchen"],
+    "l": ["lemon", "lazy", "lion", "lake"],
+    "m": ["mango", "mountain", "melon", "mouse"],
+    "n": ["night", "nail", "nest", "nap"],
+    "o": ["orange", "octopus", "olive", "onion"],
+    "p": ["peach", "pineapple", "pear", "plum"],
+    "q": ["quartz", "queen", "quick", "quiz"],
+    "r": ["river", "rabbit", "rose", "rock"],
+    "s": ["sphinx", "strawberry", "sun", "ship"],
+    "t": ["tree", "tiger", "tulip", "train"],
+    "u": ["umbrella", "unicorn", "up", "use"],
+    "v": ["vex", "valley", "violet", "van"],
+    "w": ["wolf", "window", "water", "wheel"],
+    "x": ["xylophone", "xerox", "xenon", "box"],
+    "y": ["yellow", "yarn", "yard", "yogurt"],
+    "z": ["zebra", "zoo", "zigzag", "zone"]
+}
