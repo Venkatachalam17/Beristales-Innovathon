@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Beristales - Beginner Mode</title>
+<style>
+body{font-family:'Segoe UI',sans-serif;background:#e6f0ff;margin:0;padding:0;display:flex;flex-direction:column;align-items:center;min-height:100vh;color:#333;}
+header{text-align:center;padding:40px 20px 20px;}
+header h1{font-size:3em;margin:0;color:#222;}
+header h2{font-size:1.5em;color:#555;margin:5px 0;}
+#welcome-text{font-size:1.2em;color:#666;}
+.typing-container{background:#fff;padding:30px;border-radius:12px;box-shadow:0 8px 15px rgba(0,0,0,0.1);width:95%;max-width:900px;margin-top:20px;text-align:center;}
+#drill-text{font-size:2.2em;line-height:2.5em;margin-bottom:20px;color:#444;}
+#drill-text span.correct{color:green;}
+#drill-text span.incorrect{color:red;}
+#drill-text span.current{border-left:2px solid #000;animation:blink 1s infinite;}
+@keyframes blink{0%,50%{border-color:black;}50.01%,100%{border-color:transparent;}}
+.keyboard-container{border:2px solid #aaa;border-radius:12px;padding:15px;background:#f9f9f9;display:inline-block;margin-top:30px;}
+.keyboard{display:flex;flex-direction:column;align-items:center;}
+.key-row{display:flex;margin-bottom:6px;}
+.key{width:45px;height:45px;margin:3px;background:#ddd;border-radius:6px;display:flex;justify-content:center;align-items:center;font-weight:bold;cursor:pointer;user-select:none;transition:background 0.2s;}
+.key.active{background:#4CAF50;color:#fff;}
+.key.space{width:250px;}
+.key.backspace{width:90px;}
+.stats{margin-top:20px;font-size:1em;color:#555;}
+footer{margin-top:30px;padding:20px;font-size:0.95em;color:#555;text-align:center;}
+</style>
+</head>
+<body>
+
+<header>
+<h1>Beristales - Beginner Mode</h1>
+<h2>An Intelligent AI Typing Tutor</h2>
+<div id="welcome-text">Welcome to Beginner Mode</div>
+</header>
+
+<div class="typing-container">
+    <div id="drill-text"></div>
+    <div class="keyboard-container">
+        <div class="keyboard" id="keyboard">
+            <div class="key-row">
+                <div class="key">q</div><div class="key">w</div><div class="key">e</div><div class="key">r</div><div class="key">t</div>
+                <div class="key">y</div><div class="key">u</div><div class="key">i</div><div class="key">o</div><div class="key">p</div>
+            </div>
+            <div class="key-row">
+                <div class="key">a</div><div class="key">s</div><div class="key">d</div><div class="key">f</div><div class="key">g</div>
+                <div class="key">h</div><div class="key">j</div><div class="key">k</div><div class="key">l</div>
+            </div>
+            <div class="key-row">
+                <div class="key">z</div><div class="key">x</div><div class="key">c</div><div class="key">v</div><div class="key">b</div>
+                <div class="key">n</div><div class="key">m</div>
+            </div>
+            <div class="key-row">
+                <div class="key space">space</div>
+                <div class="key backspace">backspace</div>
+            </div>
+        </div>
+    </div>
+    <div class="stats">
+        <span id="wpm">WPM: 0</span> |
+        <span id="accuracy">Accuracy: 100%</span>
+    </div>
+</div>
+
+<footer>Tip: Focus on accuracy first. Use the keyboard below or your real keyboard.</footer>
+
+<script>
+// --- Drill Sequence ---
+const sequence = ["asdf jkl;", "qwert poiuy", "zxcv mnb"];
+const simpleWords = ["cat dog bat", "sun fun run"];
+const drills = [];
+for(let i=0;i<5;i++){ drills.push(...sequence); }
+drills.push(...simpleWords);
+
+// --- State ---
+let drillIndex=0;
+const drillTextContainer=document.getElementById("drill-text");
+let spans=[];
+let currentIndex=0;
+let startTime;
+let correctChars=0;
+
+// --- Generate Drill with Invisible Extra Space ---
+function generateDrill(){
+    drillTextContainer.innerHTML="";
+    const sentence=drills[drillIndex]+" "; // Add invisible extra space
+    sentence.split("").forEach((char,i)=>{
+        const span=document.createElement("span");
+        span.innerText=char;
+        // Hide last extra space
+        if(i===sentence.length-1) span.style.visibility="hidden";
+        drillTextContainer.appendChild(span);
+    });
+    spans=drillTextContainer.querySelectorAll("span");
+    currentIndex=0; correctChars=0; startTime=null;
+    updatePointer();
+}
+generateDrill();
+
+// --- Pointer ---
+function updatePointer(){
+    spans.forEach((s,i)=>{s.classList.remove("current"); if(i===currentIndex)s.classList.add("current");});
+}
+
+// --- Keyboard Handling ---
+const keys=document.querySelectorAll(".key");
+document.addEventListener("keydown",e=>handleKey(e.key.toLowerCase()));
+keys.forEach(k=>k.addEventListener("click",()=>{
+    let val=k.innerText.toLowerCase();
+    if(val==="space") val=" ";
+    handleKey(val);
+}));
+
+function handleKey(key){
+    // Highlight
+    keys.forEach(k=>k.classList.remove("active"));
+    keys.forEach(k=>{
+        if(k.innerText.toLowerCase()===key || 
+           (key===" " && k.innerText.toLowerCase()==="space") ||
+           (key==="backspace" && k.innerText.toLowerCase()==="backspace")){
+            k.classList.add("active");
+        }
+    });
+
+    if(!startTime && key!=="backspace") startTime=new Date();
+
+    // Backspace
+    if(key==="backspace"){
+        if(currentIndex>0){currentIndex--; spans[currentIndex].classList.remove("correct","incorrect"); if(spans[currentIndex].innerText!==" ") correctChars--; updatePointer();}
+        updateStats(); return;
+    }
+
+    if(currentIndex>=spans.length) return;
+
+    const expected=spans[currentIndex].innerText;
+    if(key===expected){spans[currentIndex].classList.add("correct"); if(expected!==" ") correctChars++;}
+    else spans[currentIndex].classList.add("incorrect");
+
+    currentIndex++;
+    updatePointer();
+    updateStats();
+
+    // Move to next drill when extra space pressed
+    if(currentIndex===spans.length && key===" "){
+        drillIndex++;
+        if(drillIndex>=drills.length){ alert("Beginner Mode Complete! Great job!"); drillIndex=0; }
+        generateDrill();
+    }
+}
+
+// --- Stats ---
+function updateStats(){
+    if(!startTime) return;
+    const now=new Date();
+    const minutes=(now-startTime)/60000||1/60;
+    const typedChars=currentIndex;
+    const typedWords=typedChars/5;
+    const wpm=Math.round(typedWords/minutes);
+    const accuracy=Math.round((correctChars/currentIndex)*100||100);
+    document.getElementById("wpm").innerText="WPM: "+wpm;
+    document.getElementById("accuracy").innerText="Accuracy: "+accuracy+"%";
+}
+</script>
+</body>
+</html>
