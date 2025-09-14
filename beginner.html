@@ -5,26 +5,66 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Beristales - Beginner Mode</title>
 <style>
-body{font-family:'Segoe UI',sans-serif;background:#e6f0ff;margin:0;padding:0;display:flex;flex-direction:column;align-items:center;min-height:100vh;color:#333;}
-header{text-align:center;padding:40px 20px 20px;}
-header h1{font-size:3em;margin:0;color:#222;}
-header h2{font-size:1.5em;color:#555;margin:5px 0;}
-#welcome-text{font-size:1.2em;color:#666;}
-.typing-container{background:#fff;padding:30px;border-radius:12px;box-shadow:0 8px 15px rgba(0,0,0,0.1);width:95%;max-width:900px;margin-top:20px;text-align:center;}
-#drill-text{font-size:2.2em;line-height:2.5em;margin-bottom:20px;color:#444;}
-#drill-text span.correct{color:green;}
-#drill-text span.incorrect{color:red;}
-#drill-text span.current{border-left:2px solid #000;animation:blink 1s infinite;}
-@keyframes blink{0%,50%{border-color:black;}50.01%,100%{border-color:transparent;}}
-.keyboard-container{border:2px solid #aaa;border-radius:12px;padding:15px;background:#f9f9f9;display:inline-block;margin-top:30px;}
+body{
+    font-family:'Segoe UI',sans-serif;
+    background:#111;
+    color:#eee;
+    margin:0;padding:0;
+    display:flex;flex-direction:column;align-items:center;
+    min-height:100vh;
+}
+header{
+    text-align:center;padding:40px 20px 20px;
+}
+header h1{font-size:3em;margin:0;color:#fff;}
+header h2{font-size:1.5em;color:#ccc;margin:5px 0;}
+#welcome-text{font-size:1.2em;color:#aaa;}
+.typing-container{
+    background:#222;
+    padding:30px;
+    border-radius:12px;
+    box-shadow:0 8px 15px rgba(0,0,0,0.2);
+    width:95%;
+    max-width:900px;
+    margin-top:20px;
+    text-align:center;
+}
+#drill-text{
+    font-size:2em;
+    line-height:2.5em;
+    margin-bottom:20px;
+    color:#eee;
+}
+#drill-text span.correct{color:#4CAF50;}
+#drill-text span.incorrect{color:#f55;}
+#drill-text span.current{border-left:2px solid #fff;animation:blink 1s infinite;}
+@keyframes blink{0%,50%{border-color:white;}50.01%,100%{border-color:transparent;}}
+.keyboard-container{
+    border:2px solid #555;
+    border-radius:12px;
+    padding:15px;
+    background:#333;
+    display:inline-block;
+    margin-top:30px;
+}
 .keyboard{display:flex;flex-direction:column;align-items:center;}
 .key-row{display:flex;margin-bottom:6px;}
-.key{width:45px;height:45px;margin:3px;background:#ddd;border-radius:6px;display:flex;justify-content:center;align-items:center;font-weight:bold;cursor:pointer;user-select:none;transition:background 0.2s;}
+.key{
+    width:45px;height:45px;margin:3px;
+    background:#555;
+    border-radius:6px;
+    display:flex;justify-content:center;align-items:center;
+    font-weight:bold;
+    cursor:pointer;
+    user-select:none;
+    transition:background 0.2s;
+    color:#eee;
+}
 .key.active{background:#4CAF50;color:#fff;}
 .key.space{width:250px;}
 .key.backspace{width:90px;}
-.stats{margin-top:20px;font-size:1em;color:#555;}
-footer{margin-top:30px;padding:20px;font-size:0.95em;color:#555;text-align:center;}
+.stats{margin-top:20px;font-size:1em;color:#ccc;}
+footer{margin-top:30px;padding:20px;font-size:0.95em;color:#aaa;text-align:center;}
 </style>
 </head>
 <body>
@@ -59,7 +99,7 @@ footer{margin-top:30px;padding:20px;font-size:0.95em;color:#555;text-align:cente
     </div>
     <div class="stats">
         <span id="wpm">WPM: 0</span> |
-        <span id="accuracy">Accuracy: 100%</span>
+        <span id="accuracy">Accuracy: 0%</span>
     </div>
 </div>
 
@@ -80,6 +120,7 @@ let spans=[];
 let currentIndex=0;
 let startTime;
 let correctChars=0;
+let totalTyped=0;
 
 // --- Generate Drill with Invisible Extra Space ---
 function generateDrill(){
@@ -88,12 +129,11 @@ function generateDrill(){
     sentence.split("").forEach((char,i)=>{
         const span=document.createElement("span");
         span.innerText=char;
-        // Hide last extra space
-        if(i===sentence.length-1) span.style.visibility="hidden";
+        if(i===sentence.length-1) span.style.visibility="hidden"; // hide extra space
         drillTextContainer.appendChild(span);
     });
     spans=drillTextContainer.querySelectorAll("span");
-    currentIndex=0; correctChars=0; startTime=null;
+    currentIndex=0; correctChars=0; totalTyped=0; startTime=null;
     updatePointer();
 }
 generateDrill();
@@ -105,15 +145,17 @@ function updatePointer(){
 
 // --- Keyboard Handling ---
 const keys=document.querySelectorAll(".key");
-document.addEventListener("keydown",e=>handleKey(e.key.toLowerCase()));
-keys.forEach(k=>k.addEventListener("click",()=>{
+document.addEventListener("keydown",e=>{
+    if(e.key.length===1 || e.key===" " || e.key==="Backspace") handleKey(e.key.toLowerCase());
+});
+keys.forEach(k=>k.addEventListener("click",()=>{ 
     let val=k.innerText.toLowerCase();
     if(val==="space") val=" ";
     handleKey(val);
 }));
 
 function handleKey(key){
-    // Highlight
+    // Highlight virtual key
     keys.forEach(k=>k.classList.remove("active"));
     keys.forEach(k=>{
         if(k.innerText.toLowerCase()===key || 
@@ -127,24 +169,41 @@ function handleKey(key){
 
     // Backspace
     if(key==="backspace"){
-        if(currentIndex>0){currentIndex--; spans[currentIndex].classList.remove("correct","incorrect"); if(spans[currentIndex].innerText!==" ") correctChars--; updatePointer();}
-        updateStats(); return;
+        if(currentIndex>0){
+            currentIndex--;
+            const prevChar=spans[currentIndex].innerText;
+            if(prevChar!==" " && spans[currentIndex].classList.contains("correct")) correctChars--;
+            spans[currentIndex].classList.remove("correct","incorrect");
+            totalTyped=Math.max(0,totalTyped-1);
+            updatePointer();
+        }
+        updateStats(); 
+        return;
     }
 
     if(currentIndex>=spans.length) return;
 
     const expected=spans[currentIndex].innerText;
-    if(key===expected){spans[currentIndex].classList.add("correct"); if(expected!==" ") correctChars++;}
-    else spans[currentIndex].classList.add("incorrect");
+    if(key===expected){
+        spans[currentIndex].classList.add("correct");
+        if(expected!==" ") correctChars++;
+    } else {
+        spans[currentIndex].classList.add("incorrect");
+    }
 
     currentIndex++;
+    if(key!==" " && key!=="backspace") totalTyped++;
+
     updatePointer();
     updateStats();
 
     // Move to next drill when extra space pressed
     if(currentIndex===spans.length && key===" "){
         drillIndex++;
-        if(drillIndex>=drills.length){ alert("Beginner Mode Complete! Great job!"); drillIndex=0; }
+        if(drillIndex>=drills.length){ 
+            alert("Beginner Mode Complete! Great job!"); 
+            drillIndex=0; 
+        }
         generateDrill();
     }
 }
@@ -153,11 +212,10 @@ function handleKey(key){
 function updateStats(){
     if(!startTime) return;
     const now=new Date();
-    const minutes=(now-startTime)/60000||1/60;
-    const typedChars=currentIndex;
-    const typedWords=typedChars/5;
-    const wpm=Math.round(typedWords/minutes);
-    const accuracy=Math.round((correctChars/currentIndex)*100||100);
+    const minutes=Math.max((now-startTime)/60000,1/60); 
+    const typedWords=correctChars/5; // only correct chars
+    const wpm=Math.max(0,Math.round(typedWords/minutes));
+    const accuracy = totalTyped===0 ? 0 : Math.round((correctChars/totalTyped)*100);
     document.getElementById("wpm").innerText="WPM: "+wpm;
     document.getElementById("accuracy").innerText="Accuracy: "+accuracy+"%";
 }

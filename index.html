@@ -9,8 +9,8 @@
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         margin: 0;
         padding: 0;
-        background: #e6f0ff;
-        color: #333;
+        background: #111;
+        color: #eee;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -26,16 +26,16 @@
     header h1 {
         font-size: 4em;
         margin: 0;
-        color: #222;
+        color: #fff;
     }
     header h2 {
         font-size: 1.5em;
         margin: 10px 0;
-        color: #555;
+        color: #aaa;
     }
     #welcome-text {
         font-size: 1.2em;
-        color: #666;
+        color: #ccc;
         margin-top: 5px;
     }
 
@@ -48,10 +48,13 @@
     .name-input input {
         padding: 6px 10px;
         border-radius: 6px;
-        border: 1px solid #ccc;
+        border: 1px solid #555;
+        background: #222;
+        color: #eee;
         font-size: 0.95em;
         width: 150px;
     }
+    .name-input input::placeholder { color: #888; }
 
     /* Mode cards */
     .modes {
@@ -62,27 +65,28 @@
         justify-content: center;
     }
     .mode-card {
-        background: #fff;
-        border: 1px solid #ccc;
+        background: #222;
+        border: 1px solid #555;
         border-radius: 12px;
         padding: 20px;
         width: 230px;
         text-align: center;
         cursor: pointer;
         transition: transform 0.3s, box-shadow 0.3s;
+        color: #eee;
     }
     .mode-card:hover {
         transform: translateY(-6px);
-        box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+        box-shadow: 0 8px 15px rgba(0,0,0,0.5);
     }
     .mode-card h2 {
         margin-bottom: 10px;
-        color: #222;
+        color: #fff;
     }
     .mode-card p {
         font-size: 0.95em;
         margin-bottom: 10px;
-        color: #444;
+        color: #ccc;
     }
 
     /* Start button */
@@ -104,7 +108,7 @@
         margin-top: 50px;
         padding: 20px;
         font-size: 0.95em;
-        color: #555;
+        color: #aaa;
         text-align: center;
     }
 </style>
@@ -162,7 +166,7 @@
         }
         welcomeText.textContent = `Welcome ${name} to Beristales`;
         alert(`Redirecting to ${mode} Mode...`);
-        // Actual navigation example:
+        // Example for actual navigation:
         // window.location.href = mode.toLowerCase().replace(' ', '-') + '.html';
     }
 </script>
