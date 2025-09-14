@@ -9,12 +9,34 @@ body{
     font-family:'Segoe UI',sans-serif;
     background:#111;
     color:#eee;
-    margin:0;padding:0;
-    display:flex;flex-direction:column;align-items:center;
+    margin:0;
+    padding:0;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
     min-height:100vh;
 }
+
+/* Home Button */
+.home-btn{
+    position: fixed; /* stays top-left */
+    top: 20px;
+    left: 20px;
+    padding: 8px 16px;
+    background: #4CAF50;
+    color: #fff;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: bold;
+    z-index: 1000;
+}
+.home-btn:hover{
+    background: #45a049;
+}
+
 header{
-    text-align:center;padding:40px 20px 20px;
+    text-align:center;
+    padding:40px 20px 20px;
 }
 header h1{font-size:3em;margin:0;color:#fff;}
 header h2{font-size:1.5em;color:#ccc;margin:5px 0;}
@@ -69,6 +91,9 @@ footer{margin-top:30px;padding:20px;font-size:0.95em;color:#aaa;text-align:cente
 </head>
 <body>
 
+<!-- Home Button -->
+<a href="/" class="home-btn">Home</a>
+
 <header>
 <h1>Beristales - Beginner Mode</h1>
 <h2>An Intelligent AI Typing Tutor</h2>
@@ -122,14 +147,14 @@ let startTime;
 let correctChars=0;
 let totalTyped=0;
 
-// --- Generate Drill with Invisible Extra Space ---
+// --- Generate Drill ---
 function generateDrill(){
     drillTextContainer.innerHTML="";
-    const sentence=drills[drillIndex]+" "; // Add invisible extra space
+    const sentence=drills[drillIndex]+" ";
     sentence.split("").forEach((char,i)=>{
         const span=document.createElement("span");
         span.innerText=char;
-        if(i===sentence.length-1) span.style.visibility="hidden"; // hide extra space
+        if(i===sentence.length-1) span.style.visibility="hidden";
         drillTextContainer.appendChild(span);
     });
     spans=drillTextContainer.querySelectorAll("span");
@@ -213,7 +238,7 @@ function updateStats(){
     if(!startTime) return;
     const now=new Date();
     const minutes=Math.max((now-startTime)/60000,1/60); 
-    const typedWords=correctChars/5; // only correct chars
+    const typedWords=correctChars/5; 
     const wpm=Math.max(0,Math.round(typedWords/minutes));
     const accuracy = totalTyped===0 ? 0 : Math.round((correctChars/totalTyped)*100);
     document.getElementById("wpm").innerText="WPM: "+wpm;

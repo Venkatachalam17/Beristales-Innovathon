@@ -15,6 +15,24 @@
   --text:#eee;
 }
 html,body{height:100%;margin:0;font-family:"Segoe UI", Roboto, Arial, sans-serif;background:var(--bg);color:var(--text);}
+
+/* Home Button */
+.home-btn{
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    padding: 8px 16px;
+    background: #4CAF50;
+    color: #fff;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: bold;
+    z-index: 1000;
+}
+.home-btn:hover{
+    background: #45a049;
+}
+
 header{padding:36px 20px 6px;text-align:center;}
 header h1{margin:0;font-size:2.5rem;color:var(--text);}
 header p{margin:6px 0 0;color:#ccc;}
@@ -48,6 +66,9 @@ footer{margin:26px 0 40px;color:#9a9a9a;text-align:center}
 </style>
 </head>
 <body>
+
+<!-- Home Button -->
+<a href="/" class="home-btn">Home</a>
 
 <header>
   <h1>Beristales — Touch Typing Mode</h1>
@@ -253,7 +274,7 @@ function startTutorWord(){
   for(let ch of word.split("")){const sp=document.createElement('span'); sp.textContent=ch; textArea.appendChild(sp);}
   spans=[...textArea.querySelectorAll('span')];
   caretIndex=0; updatePointer(); resetStats(); running=true;
-  aiPanel.style.display="block"; aiFeedback.textContent=`Practice this word: ${word}`; aiSuggestions.innerHTML="";
+  aiPanel.style.display="block"; aiFeedback.textContent = `Practice this word: ${word}`; aiSuggestions.innerHTML="";
   tutorIndex++;
 }
 </script>

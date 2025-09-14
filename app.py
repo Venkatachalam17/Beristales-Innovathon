@@ -21,10 +21,40 @@ assessment_sentences = [
     "Bright vixens jump; dozy fowl quack."
 ]
 
+# -----------------------
+# Homepage
+# -----------------------
 @app.route('/')
 def home():
-    return render_template('touch.html')
+    return render_template('index.html')
 
+# -----------------------
+# Beginner Mode
+# -----------------------
+@app.route('/beginner')
+def beginner():
+    name = request.args.get('name', 'Learner')
+    return render_template('beginner.html', username=name, rounds=practice_sentences)
+
+# -----------------------
+# Touch Typing Mode
+# -----------------------
+@app.route('/touch')
+def touch():
+    name = request.args.get('name', 'Learner')
+    return render_template('touch.html', username=name, rounds=practice_sentences)
+
+# -----------------------
+# Advanced/Professional Mode
+# -----------------------
+@app.route('/prof')
+def prof():
+    name = request.args.get('name', 'Learner')
+    return render_template('prof.html', username=name, rounds=practice_sentences)
+
+# -----------------------
+# Analyze typed sentence
+# -----------------------
 @app.route('/analyze', methods=['POST'])
 def analyze():
     data = request.get_json()
@@ -54,6 +84,9 @@ def analyze():
 
     return jsonify({"feedback": feedback, "suggestions": suggestions, "mistakes": mistakes, "accuracy": acc})
 
+# -----------------------
+# Tutor words based on mistakes
+# -----------------------
 @app.route('/tutor_words', methods=['POST'])
 def tutor_words():
     data = request.get_json()
@@ -69,10 +102,14 @@ def tutor_words():
     random.shuffle(words_to_practice)
     return jsonify({"words": words_to_practice[:20]})
 
+# -----------------------
+# Final assessment
+# -----------------------
 @app.route('/assessment', methods=['GET'])
 def assessment():
     sentence = random.choice(assessment_sentences)
     return jsonify({"sentence": sentence})
 
+# -----------------------
 if __name__ == '__main__':
     app.run(debug=True)
